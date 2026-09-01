@@ -1,18 +1,29 @@
 import { test, expect } from '@playwright/test';
+import LoginPage from '../pages/Login';
+import LandingPage from '../pages/Landing';
+import data from '../data/users.json';
 
-test('has title', async ({ page }) => {
-  await page.goto('https://playwright.dev/');
+let loginPage: LoginPage;
+let landingPage: LandingPage;
+
+test('Register with used email', async ({ page }) => {
+
+  loginPage = new LoginPage(page);
+  landingPage = new LandingPage(page);
+
+  await page.goto('https://automationexercise.com/');
 
   // Expect a title "to contain" a substring.
-  await expect(page).toHaveTitle(/Playwright/);
-});
+  await expect(page).toHaveTitle(/Automation Exercise/);
 
-test('get started link', async ({ page }) => {
-  await page.goto('https://playwright.dev/');
+  await landingPage.closeCookiesModal();
 
-  // Click the get started link.
-  await page.getByRole('link', { name: 'Get started' }).click();
+  await landingPage.goToLoginPage();
 
-  // Expects page to have a heading with the name of Installation.
-  await expect(page.getByRole('heading', { name: 'Installation' })).toBeVisible();
+  await loginPage.completeSignupError(data.users.incorrect);
+
+  await landingPage.goToLoginPage();
+
+  await loginPage.completeSignup(data.users.incorrect);
+
 });
